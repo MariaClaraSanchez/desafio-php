@@ -6,6 +6,11 @@ include_once __DIR__ . '/../Model/User.php';
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
+/**
+ * Classe responsável por realizar as transações
+ * 
+ * 
+ */
 class TransactionController {
     private $transaction;
     private $user;
@@ -19,6 +24,13 @@ class TransactionController {
         $this->conn = Database::getInstance()->getConnection();
     }
 
+    /**
+     * Realiza autentificação do usuário
+     * 
+     * @param string $token Token de login
+     * @param string $secretKey chave para acessar a api
+     * 
+     */
     private function authenticate($token, $secretKey) {
         try {
             return JWT::decode($token, new Key($secretKey, 'HS256'));
@@ -28,10 +40,14 @@ class TransactionController {
         }
     }
 
+    /**
+     * Função responsável por realizar as transações
+     * 
+     * @param array $data array cntendo o paylaod recebido, que vai conter os dados da transação
+     */
     public function transfer($data) {
         if (empty($data['token']) || empty($data['id_recebedor']) || empty($data['valor'])) {
             Response::json(['error' => 'Token, id_recebedor e valor são obrigatórios'], 400);
-            return;
         }
 
         $auth = $this->authenticate($data['token'], $this->secretKey);
@@ -41,7 +57,6 @@ class TransactionController {
 
         if ($this->user->getSaldo($id_pagador) < $valor) {
             Response::json(['error' => 'Saldo Insuficiente'], 400);
-            return;
         }
 
         try {

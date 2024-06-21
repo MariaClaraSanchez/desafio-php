@@ -2,6 +2,9 @@
 
 include('./config/Database.php');
 
+/**
+ * Classe que faz as controle de usuários e aplicação dos scripts sql no banco de dados
+ */
 class User {
     private $conn;
 
@@ -9,6 +12,11 @@ class User {
         $this->conn = Database::getInstance()->getConnection();
     }
 
+    /**
+     * Script para registrar novo usuário
+     * 
+     * @param array $data array cntendo o paylaod recebido, que vai conter os dados da transação
+     */
     public function create($data) {
         try {
             $hash = password_hash($data['password'], PASSWORD_BCRYPT);
@@ -23,6 +31,11 @@ class User {
         }
     }
 
+    /**
+     * Script para consultar dados de um usuário
+     * 
+     * @param array $data array cntendo o paylaod recebido, que vai conter os dados da transação
+     */
     public function getByUsername($data) {
         try {
             $stmt = $this->conn->prepare("SELECT * FROM " . $_ENV['TABLE_NAME_USERS'] . " WHERE name = :username OR email = :email");
@@ -35,6 +48,11 @@ class User {
         }
     }
     
+    /**
+     * Script para consutlar o saldo de um usário específico 
+     * 
+     * @param int $userId id do usuário que será encontrado na tabela de usuários
+     */
     public function getSaldo($userId) {
         try {
             $stmt = $this->conn->prepare("SELECT saldo FROM " . $_ENV['TABLE_NAME_USERS'] . " WHERE id = :id");
@@ -46,6 +64,12 @@ class User {
         }
     }
 
+    /**
+     *  Realizar update do saldo de um usuário
+     * 
+     * @param int $userId id do usuário que terá o update na tabela
+     * @param int $valor valor da transferência
+     */
     public function updateSaldo($userId, $valor) {
         try {
             $stmt = $this->conn->prepare("UPDATE " . $_ENV['TABLE_NAME_USERS'] . " SET saldo = :valor WHERE id = :id");

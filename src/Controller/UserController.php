@@ -5,8 +5,10 @@ include('./config/Response.php');
 include('./vendor/autoload.php');
 
 use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 
+/**
+ * Classe responsável por realizar controle de usuários
+ */
 class UserController {
     private $user;
     private $secretKey;
@@ -16,6 +18,11 @@ class UserController {
         $this->secretKey = $_ENV['SECRET_KEY'];
     }
 
+    /**
+     * Cadastrar um usuário novo
+     * 
+     * @param array $data array cntendo o paylaod recebido, que vai conter os dados da transação
+     */
     public function register($data) {        
         if (empty($data['name']) || empty($data['password']) || empty($data['email'])) {
             Response::json(['error' => 'Nome, senha e email são obrigatórios'], 400);
@@ -28,6 +35,12 @@ class UserController {
         }
     }
 
+    /**
+     *  Realizar login do usuário, retorna o token de acesso JWT
+     * 
+     * @param array $data array cntendo o paylaod recebido, que vai conter os dados da transação
+     * 
+     */
     public function login($data) {
         
         if ((empty($data['name']) && empty($data['email'])) || empty($data['password'])) {
